@@ -1,0 +1,11 @@
+[[package]]
+name = "ft_linear_regression"
+version = "0.1.0"
+dependencies = [
+ "lr_lib 0.1.0",
+]
+
+[[package]]
+name = "lr_lib"
+version = "0.1.0"
+
