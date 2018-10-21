@@ -9,21 +9,23 @@ pub fn compute_factors(
     filename: &String,
     initial_factors: &Factors,
 ) -> Result<Factors, Box<Error>> {
+	//Csv reader
     let mut rdr = Reader::from_path(filename)?;
-    let mut iter = rdr.deserialize();
+    let mut rdr_iter = rdr.deserialize();
+	//Csv data vector
+	let mut list : Vec<ParsingData> = Vec::new();
+    while let Some(result) = rdr_iter.next() {
+        list.push(result?);
+    }
+	let mut iter_list = list.iter();
+	//Other values
+	let coeff = (1.0 / list.len() as f64) * types::LEARNING_RATE;
     let mut new_factors = initial_factors.clone();
 
-    while let Some(result) = iter.next() {
-        let record: ParsingData = result?;
-        let mut tmp = Factors {
-            theta_0: 0.0,
-            theta_1: 0.0,
-        };
-        let error = price::estimate_price(&new_factors, &record.mileage) - record.price;
-
-        tmp.theta_0 = new_factors.theta_0 - types::LEARNING_RATE * error;
-        tmp.theta_1 = new_factors.theta_1 - types::LEARNING_RATE * error * record.mileage;
-        new_factors = tmp;
-    }
+	while let Some(val) = iter_list.next() {	
+        let error = price::estimate_price(&new_factors, &val.mileage) - val.price;
+        new_factors.theta_0 += coeff * error;
+        new_factors.theta_1 += coeff * error * val.mileage;
+	}
     Ok(new_factors)
 }
