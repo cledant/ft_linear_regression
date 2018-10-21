@@ -1,13 +1,19 @@
+use std::fmt;
+
 #[derive(Deserialize)]
 pub struct ParsingData {
     pub mileage: f64,
     pub price: f64,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Factors {
     pub theta_0: f64,
     pub theta_1: f64,
 }
 
-pub static LEARNING_RATE: f64 = 0.01;
+impl fmt::Display for Factors {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "theta_0 : {}, theta_1 : {}", self.theta_0, self.theta_1)
+    }
+}

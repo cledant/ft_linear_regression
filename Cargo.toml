@@ -13,6 +13,7 @@ path = "./src/train/main.rs"
 
 [dependencies]
 lr_lib = { path = "./lr_lib" }
+dotenv = "0.13.0"
 
 [profile.release]
 lto = true
