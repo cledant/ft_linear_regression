@@ -14,6 +14,6 @@ pub struct Factors {
 
 impl fmt::Display for Factors {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "theta_0 : {}, theta_1 : {}", self.theta_0, self.theta_1)
+        write!(f, "theta_0 : {}\ntheta_1 : {}", self.theta_0, self.theta_1)
     }
 }
