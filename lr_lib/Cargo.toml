@@ -4,3 +4,15 @@ version = "0.1.0"
 authors = ["cledant <cledant@student.42.fr>"]
 
 [dependencies]
+csv = "1.0.2"
+serde = "1.0.80"
+serde_derive = "1.0.80"
+
+[profile.release]
+lto = true
+debug = false
+panic = 'abort'
+opt-level = 3
+incremental = false
+overflow-checks = false
+debug-assertions = false
