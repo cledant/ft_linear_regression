@@ -4,6 +4,7 @@ use types::{Factors, ParsingData};
 
 use std::error::Error;
 
+#[inline]
 pub fn compute_factors(
     filename: &String,
     initial_factors: &Factors,

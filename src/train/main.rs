@@ -21,6 +21,7 @@ pub struct ParsedArgs {
     show_help: bool,
 }
 
+#[inline]
 fn parse_arguments(args: Vec<String>) -> ParsedArgs {
     let mut parsed_args = ParsedArgs {
         filename: None,
@@ -49,6 +50,7 @@ fn parse_arguments(args: Vec<String>) -> ParsedArgs {
     parsed_args
 }
 
+#[inline]
 fn save_in_env_file(to_save: &Factors) -> Result<(), Box<Error>> {
     let mut file = OpenOptions::new().write(true).create(true).open(".env")?;
 
@@ -61,6 +63,7 @@ fn save_in_env_file(to_save: &Factors) -> Result<(), Box<Error>> {
     Ok(())
 }
 
+#[inline]
 fn run(args: ParsedArgs, factors: Factors) {
     if args.filename == None || args.show_help == true {
         println!("{}", HELP_MSG);

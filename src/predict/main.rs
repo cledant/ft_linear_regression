@@ -8,22 +8,25 @@ use std::env;
 use std::error::Error;
 use std::io;
 
-fn run(factors : Factors) -> Result<(), Box<Error>> {
-	let mut buff = String::new();
+fn run(factors: Factors) -> Result<(), Box<Error>> {
+    let mut buff = String::new();
 
-	loop {
-		buff.clear();
-		println!("Enter a mileage : ");
-		if let 0 = io::stdin().read_line(&mut buff)? {
-			break;
-		} else {
-			match buff.trim().parse::<f64>() {
-				Ok(mileage) => println!("Estimated price :\n{}", price::estimate_price(&factors, &mileage)),
-				Err(e) => println!("Error : {}", e),
-			}
-		}
-	}
-	Ok(())
+    loop {
+        buff.clear();
+        println!("Enter a mileage : ");
+        if let 0 = io::stdin().read_line(&mut buff)? {
+            break;
+        } else {
+            match buff.trim().parse::<f64>() {
+                Ok(mileage) => println!(
+                    "Estimated price :\n{}",
+                    price::estimate_price(&factors, &mileage)
+                ),
+                Err(e) => println!("Error : {}", e),
+            }
+        }
+    }
+    Ok(())
 }
 
 fn main() {
@@ -39,7 +42,7 @@ fn main() {
             .parse::<f64>()
             .unwrap_or_else(|_| 0.0),
     };
-	if let Err(err) = run(env_factors) {
-		println!("predict : {}", err);
-	}
+    if let Err(err) = run(env_factors) {
+        println!("predict : {}", err);
+    }
 }
