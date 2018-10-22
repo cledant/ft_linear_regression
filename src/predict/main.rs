@@ -8,6 +8,7 @@ use std::env;
 use std::error::Error;
 use std::io;
 
+#[inline]
 fn run(factors: Factors) -> Result<(), Box<Error>> {
     let mut buff = String::new();
 

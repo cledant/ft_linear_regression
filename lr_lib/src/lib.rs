@@ -6,3 +6,4 @@ extern crate serde;
 pub mod factors;
 pub mod price;
 pub mod types;
+pub mod gradient_descent;

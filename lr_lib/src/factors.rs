@@ -1,5 +1,7 @@
 use csv::ReaderBuilder;
+
 use price;
+use gradient_descent;
 use types::{Factors, ParsingData};
 
 use std::error::Error;
@@ -21,14 +23,14 @@ pub fn compute_factors(
 		if let Ok(val) = value {
 			let parsed_data : ParsingData = val;
 	        let error = price::estimate_price(&new_factors, &parsed_data.mileage) - parsed_data.price;
-			new_factors.theta_0 -= learning_rate * error;
-        	new_factors.theta_1 -= learning_rate * error * parsed_data.mileage;
+			let coeff = gradient_descent::first_degree(new_factors.theta_1.clone(),
+							error.clone(),
+							0.01,
+							100); 
+			new_factors.theta_0 += coeff * error;
+        	new_factors.theta_1 += coeff * error * parsed_data.mileage;
 			i += 1;
-			println!("{}", new_factors);
 		}
     }
-//	let coeff = learning_rate / (i as f64);
-//	new_factors.theta_0 *= coeff;
-//	new_factors.theta_1 *= coeff;
     Ok(new_factors)
 }
