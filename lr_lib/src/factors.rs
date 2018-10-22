@@ -10,30 +10,25 @@ pub fn compute_factors(
     initial_factors: &Factors,
     learning_rate: &f64,
 ) -> Result<Factors, Box<Error>> {
-    //Csv reader
     let mut rdr = ReaderBuilder::new()
         .has_headers(false)
         .from_path(filename)?;
     let mut rdr_iter = rdr.deserialize();
-    //Csv data vector
-    let mut list: Vec<ParsingData> = Vec::new();
-    while let Some(result) = rdr_iter.next() {
-        if let Ok(res) = result {
-            list.push(res);
-        }
-    }
-    let mut iter_list = list.iter();
-    //Other values
-    let coeff = (1.0 / list.len() as f64) * learning_rate;
     let mut new_factors = initial_factors.clone();
+	let mut i : u64 = 0;
 
-    //println!("coeff : {}", coeff);
-    while let Some(val) = iter_list.next() {
-        //println!("new_factors : {}, {}", new_factors.theta_0, new_factors.theta_1);
-        let error = price::estimate_price(initial_factors, &val.mileage) - val.price;
-        //println!("error : {}", error);
-        new_factors.theta_0 += coeff * error;
-        new_factors.theta_1 += coeff * error * val.mileage;
+    while let Some(value) = rdr_iter.next() {
+		if let Ok(val) = value {
+			let parsed_data : ParsingData = val;
+	        let error = price::estimate_price(&new_factors, &parsed_data.mileage) - parsed_data.price;
+			new_factors.theta_0 -= learning_rate * error;
+        	new_factors.theta_1 -= learning_rate * error * parsed_data.mileage;
+			i += 1;
+			println!("{}", new_factors);
+		}
     }
+//	let coeff = learning_rate / (i as f64);
+//	new_factors.theta_0 *= coeff;
+//	new_factors.theta_1 *= coeff;
     Ok(new_factors)
 }
