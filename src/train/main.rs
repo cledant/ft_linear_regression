@@ -10,14 +10,17 @@ use std::fs::OpenOptions;
 use std::io::Write;
 
 static DEFAULT_LEARNING_RATE: f64 = 0.1;
+static DEFAULT_MAX_ITER: usize = 10000;
 static HELP_MSG: &'static str = "Traning Usage :
 	-h : show help
 	-f : path to csv file
-	-l : set learning rate value. Default is 0.1";
+	-l : set learning rate value. Default is 0.1
+	-i : set maximum iteration number. Default is 10000";
 
 pub struct ParsedArgs {
     filename: Option<String>,
     learning_rate: f64,
+	max_iter : usize,
     show_help: bool,
 }
 
@@ -26,6 +29,7 @@ fn parse_arguments(args: Vec<String>) -> ParsedArgs {
     let mut parsed_args = ParsedArgs {
         filename: None,
         learning_rate: DEFAULT_LEARNING_RATE,
+		max_iter : DEFAULT_MAX_ITER,
         show_help: false,
     };
 
@@ -42,6 +46,12 @@ fn parse_arguments(args: Vec<String>) -> ParsedArgs {
                 parsed_args.learning_rate = match args.get(i + 1) {
                     Some(val) => val.parse::<f64>().unwrap_or_else(|_| DEFAULT_LEARNING_RATE),
                     None => DEFAULT_LEARNING_RATE,
+                };
+            }
+            "-i" => {
+                parsed_args.max_iter = match args.get(i + 1) {
+                    Some(val) => val.parse::<usize>().unwrap_or_else(|_| DEFAULT_MAX_ITER),
+                    None => DEFAULT_MAX_ITER,
                 };
             }
             _ => {}
@@ -68,7 +78,7 @@ fn run(args: ParsedArgs, factors: Factors) {
     if args.filename == None || args.show_help == true {
         println!("{}", HELP_MSG);
     } else {
-        match factors::compute_factors(&args.filename.unwrap(), &factors, &args.learning_rate) {
+        match factors::compute_factors(&args.filename.unwrap(), &factors, &args.learning_rate, &args.max_iter) {
             Ok(values) => {
                 println!("{}", values);
                 save_in_env_file(&values)
