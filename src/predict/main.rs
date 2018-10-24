@@ -42,6 +42,7 @@ fn main() {
             .unwrap_or_else(|_| "0.0".to_string())
             .parse::<f64>()
             .unwrap_or_else(|_| 0.0),
+		ms_error: 0.0,
     };
     if let Err(err) = run(env_factors) {
         println!("predict : {}", err);

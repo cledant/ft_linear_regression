@@ -12,17 +12,20 @@ use std::io::Write;
 
 static DEFAULT_LEARNING_RATE: f64 = 0.1;
 static DEFAULT_MAX_ITER: usize = 10000;
+static DEFAULT_PRECISION: f64 = 1.0e-6;
 static HELP_MSG: &'static str = "Traning Usage :
 	-h : show help
 	-f : path to csv file
 	-l : set learning rate value. Default is 0.1
-	-i : set maximum iteration number. Default is 10000";
+	-i : set maximum iteration number. Default is 10000
+	-p : set precision to stop learning. Default is 1.0e-6";
 
 pub struct ParsedArgs {
     filename: Option<String>,
     learning_rate: f64,
     max_iter: usize,
     show_help: bool,
+	precision: f64,
 }
 
 #[inline]
@@ -32,6 +35,7 @@ fn parse_arguments(args: Vec<String>) -> ParsedArgs {
         learning_rate: DEFAULT_LEARNING_RATE,
         max_iter: DEFAULT_MAX_ITER,
         show_help: false,
+		precision: DEFAULT_PRECISION
     };
 
     for i in 1..args.len() {
@@ -53,6 +57,12 @@ fn parse_arguments(args: Vec<String>) -> ParsedArgs {
                 parsed_args.max_iter = match args.get(i + 1) {
                     Some(val) => val.parse::<usize>().unwrap_or_else(|_| DEFAULT_MAX_ITER),
                     None => DEFAULT_MAX_ITER,
+                };
+            }
+            "-p" => {
+                parsed_args.precision = match args.get(i + 1) {
+                    Some(val) => val.parse::<f64>().unwrap_or_else(|_| DEFAULT_PRECISION),
+                    None => DEFAULT_PRECISION,
                 };
             }
             _ => {}
@@ -87,6 +97,7 @@ fn run(args: ParsedArgs, factors: Factors) {
                     &factors,
                     &args.learning_rate,
                     &args.max_iter,
+					&args.precision,
                 );
                 println!("{}", computed_factors);
                 save_in_env_file(&computed_factors)
@@ -112,6 +123,8 @@ fn main() {
             .unwrap_or_else(|_| "0.0".to_string())
             .parse::<f64>()
             .unwrap_or_else(|_| 0.0),
+		ms_error: 0.0,
+		stop_iter: 0,
     };
     let args: Vec<String> = env::args().collect();
     let parsed_args = parse_arguments(args);
