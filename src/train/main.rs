@@ -1,6 +1,7 @@
 extern crate dotenv;
 extern crate lr_lib;
 
+use lr_lib::csv_parsing;
 use lr_lib::factors;
 use lr_lib::types::Factors;
 
@@ -20,7 +21,7 @@ static HELP_MSG: &'static str = "Traning Usage :
 pub struct ParsedArgs {
     filename: Option<String>,
     learning_rate: f64,
-	max_iter : usize,
+    max_iter: usize,
     show_help: bool,
 }
 
@@ -29,7 +30,7 @@ fn parse_arguments(args: Vec<String>) -> ParsedArgs {
     let mut parsed_args = ParsedArgs {
         filename: None,
         learning_rate: DEFAULT_LEARNING_RATE,
-		max_iter : DEFAULT_MAX_ITER,
+        max_iter: DEFAULT_MAX_ITER,
         show_help: false,
     };
 
@@ -78,13 +79,23 @@ fn run(args: ParsedArgs, factors: Factors) {
     if args.filename == None || args.show_help == true {
         println!("{}", HELP_MSG);
     } else {
-        match factors::compute_factors(&args.filename.unwrap(), &factors, &args.learning_rate, &args.max_iter) {
-            Ok(values) => {
-                println!("{}", values);
-                save_in_env_file(&values)
-                    .unwrap_or_else(|err| println!("Saving result error : {}", err))
+        match csv_parsing::parse_csv_file(&args.filename.unwrap()) {
+            Ok(mut parsed_data) => {
+                csv_parsing::scale_data(&mut parsed_data);
+                let computed_factors = factors::compute_factors(
+                    &parsed_data,
+                    &factors,
+                    &args.learning_rate,
+                    &args.max_iter,
+                );
+                println!("{}", computed_factors);
+                save_in_env_file(&computed_factors)
+                    .unwrap_or_else(|err| println!("Saving result error : {}", err));
             }
-            Err(err) => println!("Factors computation error : {}", err),
+            Err(err) => {
+                println!("Csv parsing error : {}", err);
+                return;
+            }
         }
     }
 }

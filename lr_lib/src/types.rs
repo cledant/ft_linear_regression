@@ -1,9 +1,15 @@
 use std::fmt;
 
 #[derive(Deserialize)]
-pub struct ParsingData {
+pub struct Data {
     pub mileage: f64,
     pub price: f64,
+}
+
+pub struct Parsing {
+    pub data: Vec<Data>,
+    pub max_price: f64,
+    pub max_mileage: f64,
 }
 
 #[derive(Debug, Clone)]
