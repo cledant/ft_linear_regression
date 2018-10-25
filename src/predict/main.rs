@@ -43,6 +43,7 @@ fn main() {
             .parse::<f64>()
             .unwrap_or_else(|_| 0.0),
 		ms_error: 0.0,
+		stop_iter: 0,
     };
     if let Err(err) = run(env_factors) {
         println!("predict : {}", err);

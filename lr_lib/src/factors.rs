@@ -11,7 +11,6 @@ pub fn compute_factors(
 ) -> Factors {
     let mut new_factors = initial_factors.clone();
     let coeff = learning_rate / (parsed_data.data.len() as f64);
-	let mut prev_error = 1.0;
 	let mut i : usize = 0;
 	let mut prev_step = 1.0;
 	
@@ -22,7 +21,7 @@ pub fn compute_factors(
 			ms_error: 0.0,
 			stop_iter: 0,
         };
-		prev_error = new_factors.theta_0;
+		let prev_error = new_factors.theta_0;
         for value in parsed_data.data.iter() {
             let error = price::estimate_price(&new_factors, &value.mileage) - value.price;
             tmp_factors.theta_0 += error;
