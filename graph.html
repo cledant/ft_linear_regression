@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<svg width="1920" height="1080"></svg>
+<script>
+
+var svg = d3.select("svg"),
+	width = +svg.attr("width"),
+	height = +svg.attr("height"),
+	margin = {top: 20, right: 20, bottom: 20, left: 50};
+
+//Defining axis scaling
+var axis_x = d3.scaleLinear()
+				.rangeRound([2 * margin.left, width - margin.right]);
+
+var axis_y = d3.scaleLinear()
+				.rangeRound([height - 2 * margin.bottom, margin.top]);
+
+//Parsing file path
+var urlParams = new URLSearchParams(window.location.search);
+var file = urlParams.get('file');
+
+if (file == null)
+	file = "data.csv"
+
+//Reading csv file
+d3.csv(file, function(d) {
+	return {
+		mileage :  +d.km,
+		price : +d.price,
+	};
+}, function(error, data) {
+
+	if (error) {
+		console.log("An error happend");
+		return;
+	}
+
+	//Scaling data
+	axis_x.domain([0, d3.max(data, function(d) { return d.mileage; })]).nice();
+	axis_y.domain([0, d3.max(data, function(d) { return d.price; })]).nice();
+
+	//Ploting
+	svg.append("g")
+		.attr("stroke", "black")
+    .selectAll("circle")
+    .data(data)
+    .enter().append("circle")
+		.attr("cx", function(d) { return axis_x(d.mileage); })
+		.attr("cy", function(d) { return axis_y(d.price); })
+		.attr("r", 3);
+
+	//X-axis
+	svg.append("g")
+		.attr("transform", "translate(0," + (height - 2 * margin.bottom) + ")")
+		.call(d3.axisBottom(axis_x));
+
+	//X-axis Label
+	svg.append("text")             
+		.attr("transform", "translate(" + (width/2) + " ," +  (height ) + ")")
+		.text("Price");
+
+	//Y-axis
+	svg.append("g")
+		.attr("transform", "translate(" + 2 * margin.left + ")")
+		.call(d3.axisLeft(axis_y));
+
+	//y-Axis Label
+	svg.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", margin.left / 2)
+		.attr("x", -height / 2)
+		.text("Mileage"); 
+});
+
+</script>
