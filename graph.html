@@ -34,7 +34,7 @@ d3.csv(file, function(d) {
 }, function(error, data) {
 
 	if (error) {
-		console.log("An error happend");
+		console.log("An error happend while loading csv file");
 		return;
 	}
 
@@ -73,6 +73,42 @@ d3.csv(file, function(d) {
 		.attr("y", margin.left / 2)
 		.attr("x", -height / 2)
 		.text("Mileage"); 
+});
+
+//Reading env file
+d3.text(".env", function(error, data) {
+
+	if (error) {
+		console.log("An error happend while loading .env file");
+		return;
+	}
+
+	//array for a * x + b axis
+	val_array = [];
+
+	data.trim();
+	var s_array = data.split('\n');
+	for (i = 0; i < s_array.length; i++) {
+		s_array[i].trim();
+		if (s_array[i].startsWith("THETA_" + i + "=")) {
+			var tmp = s_array[i].split("THETA_" + i + "=");
+			if (tmp.length == 2)
+				val_array.push(+tmp[1]);
+		}
+	}
+	if (val_array < 2) {
+		console.log("Theta 0 and theta 1 are needed");
+		return;
+	}
+
+	svg.append("line")
+		.attr("x1", axis_x(0))
+		.attr("y1", axis_y(val_array[1]))
+		.attr("x2", axis_x(val_array[1] / val_array[0]))
+		.attr("y2", axis_y(0))
+		.attr("stroke-width", 2)
+		.attr("stroke", "red");
+	console.log(val_array);
 });
 
 </script>
