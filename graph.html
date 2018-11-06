@@ -83,7 +83,7 @@ d3.text(".env", function(error, data) {
 		return;
 	}
 
-	//array for a * x + b axis
+	//array for a * theta_1 + theta_0 axis
 	val_array = [];
 
 	data.trim();
@@ -103,12 +103,11 @@ d3.text(".env", function(error, data) {
 
 	svg.append("line")
 		.attr("x1", axis_x(0))
-		.attr("y1", axis_y(val_array[1]))
-		.attr("x2", axis_x(val_array[1] / val_array[0]))
+		.attr("y1", axis_y(val_array[0]))
+		.attr("x2", axis_x(-val_array[0] / val_array[1]))
 		.attr("y2", axis_y(0))
 		.attr("stroke-width", 2)
 		.attr("stroke", "red");
-	console.log(val_array);
 });
 
 </script>
