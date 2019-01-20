@@ -80,7 +80,7 @@ fn save_in_env_file(to_save: &Factors) -> Result<(), Box<Error>> {
         "THETA_0={}\nTHETA_1={}\n",
         to_save.theta_0.to_string(),
         to_save.theta_1.to_string()
-    );
+    )?;
     Ok(())
 }
 
