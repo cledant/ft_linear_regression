@@ -1,4 +1,4 @@
-use types::Factors;
+use crate::types::Factors;
 
 #[inline]
 pub fn estimate_price(factors: &Factors, mileage: &f64) -> f64 {

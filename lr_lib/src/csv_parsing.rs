@@ -1,6 +1,6 @@
 use csv::ReaderBuilder;
 
-use types::{Data, Parsing};
+use crate::types::{Data, Parsing};
 
 use std::error::Error;
 
