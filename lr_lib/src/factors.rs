@@ -1,5 +1,5 @@
-use price;
-use types::{Factors, Parsing};
+use crate::price;
+use crate::types::{Factors, Parsing};
 
 #[inline]
 pub fn compute_factors(
