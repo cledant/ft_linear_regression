@@ -1,0 +1,22 @@
+{
+  "name": "ft_linear_regression_graph",
+  "version": "1.0.0",
+  "description": "Graph for ft_linear_regression",
+  "main": "graph.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cledant/ft_linear_regression.git"
+  },
+  "author": "cledant",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/cledant/ft_linear_regression/issues"
+  },
+  "homepage": "https://github.com/cledant/ft_linear_regression#readme",
+  "dependencies": {
+    "d3": "^5.9.2"
+  }
+}
