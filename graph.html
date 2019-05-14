@@ -3,111 +3,148 @@
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
-<svg width="1920" height="1080"></svg>
+<div>CSV file :</div>
+<input id="csv-input" type="file" name="csv-path"/>
+<br>
+
+<div>Theta file :</div>
+<input id="theta-input" type="file" name="theta-path"/>
+<br>
+
+<div>
+<button onclick="drawSVG()">Display</button>
+</div>
+
+<svg width="1600" height="900"></svg>
+
 <script>
 
-var svg = d3.select("svg"),
-	width = +svg.attr("width"),
-	height = +svg.attr("height"),
-	margin = {top: 20, right: 20, bottom: 20, left: 50};
+function drawSVG() {
+  //Reading csv file
+  var csvFile = document.getElementById("csv-input").files[0],
+    thetaFile = document.getElementById("theta-input").files[0],
+    readerCSV = new FileReader(),
+    readerTheta = new FileReader();
 
-//Defining axis scaling
-var axis_x = d3.scaleLinear()
-				.rangeRound([2 * margin.left, width - margin.right]);
+  readerCSV.onload = function(e) {
+    var csvStr = readerCSV.result;
+    var data = d3.csvParse(csvStr, function(d) {
+      return {
+        mileage: +d.km,
+        price: +d.price
+      };
+    });
 
-var axis_y = d3.scaleLinear()
-				.rangeRound([height - 2 * margin.bottom, margin.top]);
+    readerTheta.onload = function(e) {
+      var thetaStr = readerTheta.result;
+      //parse array for a * theta_1 + theta_0 axis
+      var val_array = [];
 
-//Parsing file path
-var urlParams = new URLSearchParams(window.location.search);
-var file = urlParams.get('file');
+      var s_array = thetaStr.split("\n");
+      for (i = 0; i < s_array.length; i++) {
+        s_array[i].trim();
+        if (s_array[i].startsWith("THETA_" + i + "=")) {
+          var tmp = s_array[i].split("THETA_" + i + "=");
+          if (tmp.length == 2) val_array.push(+tmp[1]);
+        }
+      }
+      if (val_array < 2) {
+        console.log("Theta 0 and theta 1 are needed");
+        return;
+      }
+      drawCSV(data, val_array);
+    };
+  };
 
-if (file == null)
-	file = "data.csv"
+  readerCSV.readAsBinaryString(csvFile);
+  readerTheta.readAsBinaryString(thetaFile);
+}
 
-//Reading csv file
-d3.csv(file, function(d) {
-	return {
-		mileage :  +d.km,
-		price : +d.price,
-	};
-}, function(error, data) {
+function drawCSV(data, val_array) {
+  var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height"),
+    margin = { top: 20, right: 20, bottom: 20, left: 50 };
 
-	if (error) {
-		console.log("An error happend while loading csv file");
-		return;
-	}
+  svg.selectAll("*").remove();
 
-	//Scaling data
-	axis_x.domain([0, d3.max(data, function(d) { return d.mileage; })]).nice();
-	axis_y.domain([0, d3.max(data, function(d) { return d.price; })]).nice();
+  //Defining axis scaling
+  var axis_x = d3
+    .scaleLinear()
+    .rangeRound([2 * margin.left, width - margin.right]);
 
-	//Ploting
-	svg.append("g")
-		.attr("stroke", "black")
+  var axis_y = d3
+    .scaleLinear()
+    .rangeRound([height - 2 * margin.bottom, margin.top]);
+
+  //Scaling data
+  axis_x
+    .domain([
+      0,
+      d3.max(data, function(d) {
+        return d.mileage;
+      })
+    ])
+    .nice();
+  axis_y
+    .domain([
+      0,
+      d3.max(data, function(d) {
+        return d.price;
+      })
+    ])
+    .nice();
+
+  //Ploting
+  svg
+    .append("g")
+    .attr("stroke", "black")
     .selectAll("circle")
     .data(data)
-    .enter().append("circle")
-		.attr("cx", function(d) { return axis_x(d.mileage); })
-		.attr("cy", function(d) { return axis_y(d.price); })
-		.attr("r", 3);
+    .enter()
+    .append("circle")
+    .attr("cx", function(d) {
+      return axis_x(d.mileage);
+    })
+    .attr("cy", function(d) {
+      return axis_y(d.price);
+    })
+    .attr("r", 3);
 
-	//X-axis
-	svg.append("g")
-		.attr("transform", "translate(0," + (height - 2 * margin.bottom) + ")")
-		.call(d3.axisBottom(axis_x));
+  //X-axis
+  svg
+    .append("g")
+    .attr("transform", "translate(0," + (height - 2 * margin.bottom) + ")")
+    .call(d3.axisBottom(axis_x));
 
-	//X-axis Label
-	svg.append("text")             
-		.attr("transform", "translate(" + (width/2) + " ," +  (height ) + ")")
-		.text("Price");
+  //X-axis Label
+  svg
+    .append("text")
+    .attr("transform", "translate(" + width / 2 + " ," + height + ")")
+    .text("Price");
 
-	//Y-axis
-	svg.append("g")
-		.attr("transform", "translate(" + 2 * margin.left + ")")
-		.call(d3.axisLeft(axis_y));
+  //Y-axis
+  svg
+    .append("g")
+    .attr("transform", "translate(" + 2 * margin.left + ")")
+    .call(d3.axisLeft(axis_y));
 
-	//y-Axis Label
-	svg.append("text")
-		.attr("transform", "rotate(-90)")
-		.attr("y", margin.left / 2)
-		.attr("x", -height / 2)
-		.text("Mileage"); 
-});
+  //y-Axis Label
+  svg
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", margin.left / 2)
+    .attr("x", -height / 2)
+    .text("Mileage");
 
-//Reading env file
-d3.text(".env", function(error, data) {
-
-	if (error) {
-		console.log("An error happend while loading .env file");
-		return;
-	}
-
-	//array for a * theta_1 + theta_0 axis
-	val_array = [];
-
-	data.trim();
-	var s_array = data.split('\n');
-	for (i = 0; i < s_array.length; i++) {
-		s_array[i].trim();
-		if (s_array[i].startsWith("THETA_" + i + "=")) {
-			var tmp = s_array[i].split("THETA_" + i + "=");
-			if (tmp.length == 2)
-				val_array.push(+tmp[1]);
-		}
-	}
-	if (val_array < 2) {
-		console.log("Theta 0 and theta 1 are needed");
-		return;
-	}
-
-	svg.append("line")
-		.attr("x1", axis_x(0))
-		.attr("y1", axis_y(val_array[0]))
-		.attr("x2", axis_x(-val_array[0] / val_array[1]))
-		.attr("y2", axis_y(0))
-		.attr("stroke-width", 2)
-		.attr("stroke", "red");
-});
-
+  //Theta Axis
+  svg
+    .append("line")
+    .attr("x1", axis_x(0))
+    .attr("y1", axis_y(val_array[0]))
+    .attr("x2", axis_x(-val_array[0] / val_array[1]))
+    .attr("y2", axis_y(0))
+    .attr("stroke-width", 2)
+    .attr("stroke", "red");
+}
 </script>
